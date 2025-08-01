@@ -32,10 +32,9 @@ sed -i 's/_/ /g' species_u.txt
 - select fungi (not oomycetes), release 67, fasta, and genome = 282 fasta files
 - copy-paste this list into Excel
  use a macro to generate the list as a batch: 
-1. **Open your Excel workbook.**
-    
-2. Press **`Fn + Option + F11`**  
-3. In the VBA Editor, go to **Insert > Module**.
+1. Open your Excel workbook
+2. Press `Fn + Option + F11`
+3. In the VBA Editor, go to Insert > Module.
     
 4. Paste this macro code:
    
@@ -45,7 +44,7 @@ sed -i 's/_/ /g' species_u.txt
 End Function
 
     
-5. Press **`Command + S`** and save your workbook as **macro-enabled** (`.xlsm`).
+5. Press `Command + S` and save your workbook as macro-enabled (`.xlsm`).
     
 6. Close the editor.
     
@@ -55,9 +54,11 @@ End Function
     
 Save just the urls in a file called: fungi_urls.txt and upload to the Kraken2_fungi_db folder server via filezilla
 
+```
 mkdir -p fungidb_genomes
 cd fungidb_genomes
 wget -i ../fungi_urls.txt
+```
 
 ## put all genomes into one directory and unzip
 
@@ -65,6 +66,7 @@ wget -i ../fungi_urls.txt
 #### no headers (even those from NCBI) are formatted improperly and need to be reformated
 
 ### Read species into an array first
+```
 mapfile -t species_list < species_keys.txt
 
 Create or clear the output file
@@ -81,9 +83,9 @@ for species in "${species_list[@]}"; do
     echo -e "$species\t$taxid" >> species_with_taxids.tsv
   fi
 done
-
+```
 ### Rename headers
-
+```
 TAXID_TABLE="genome_taxid_table.tsv"
 GENOME_DIR="."
 OUT_DIR="kraken_ready_fastas"
@@ -113,7 +115,7 @@ tail -n +2 "$TAXID_TABLE" | while IFS=$'\t' read -r file taxid; do
 done
 
 echo "  All FASTA headers updated in: $OUT_DIR"
-
+```
 
 ## 5) Once all headers have been renamed, you are ready to build your custom DB
 
@@ -130,11 +132,14 @@ kraken2-build --build --db /home/projects/Agribiome/Kraken2_fungi_db/kraken_fung
 
 ## 7) Download library
 ### you do this step NOW and not with the rest of the download because it makes a hash table that cannot be overwritten by your custom hash table. However, you cannot build Bracken without this file
+```
 kraken2-build --download-library fungi --db /home/projects/Agribiome/Kraken2_fungi_db/kraken_fungi_db
-
+```
 ## 8) Build Bracken
 ### -l refers to the length of your reads
+```
 bracken-build -k 35 -l 151 -d /home/projects/Agribiome/Kraken2_fungi_db/kraken_fungi_db
+```
 
 ## 9) Clean up your database
 
