@@ -1,10 +1,12 @@
-## 1) First step, after downloading Kraken is to build the database
+# 1) First step, after downloading Kraken is to build the database
 ```
 kraken2-build --download-taxonomy --db custom_db
 ```
+# 2) The next step is to get a list of taxonomy IDs from NCBI, even if the database you are making isn't from NCBI
 
-## 2) Download databases 
-# Ensembl (I did this one first)
+
+# 2) Download databases 
+## Ensembl (I did this one first)
 Go to this page http://ftp.ensemblgenomes.org/pub/fungi/release-61/fasta
 
 
@@ -20,7 +22,7 @@ cut -d'_' -f1,2 species_list.txt
 sort -u species_list.txt > species_u.txt
 sed -i 's/_/ /g' species_u.txt
 ```
-# FungiDB
+## FungiDB
 
 - go to the FungiDB preferred organisms page
 - select fungi (not oomycetes), release 67, fasta, and genome = 282 fasta files
@@ -56,49 +58,35 @@ mkdir -p fungidb_genomes
 cd fungidb_genomes
 wget -i ../fungi_urls.txt
 ```
+## put all genomes into one directory and unzip
 
-## 3) The next step is to get a list of taxonomy IDs from NCBI, even if the database you are making isn't from NCBI
+# 4) Reformat headers
+### no headers (even those from NCBI) are formatted improperly and need to be reformated
 
-####  I pulled the file names from the ensembl dir I downloaded last week and clean up the list:
-```
-ls ensembl_fungi/ > species_list.txt
-cut -d'_' -f1,2 species_list.txt
-sort -u species_list.txt > species_u.txt
-sed -i 's/_/ /g' species_u.txt
-```
-#### I needed to install entrez and put it in my path
-```
-sh -c "$(curl -fsSL https://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/install-edirect.sh)"
-export PATH=$PATH:$HOME/edirect
-source ~/.bashrc
-```
-#### use entrez to get the ids from NCBI
-make_species_taxid_map.sh
-```
-# Read species into an array first
-mapfile -t species_list < species_u.txt
+## Look up the Taxids from NCBI based on the species names in your custom db
+input="full_orgs_names.txt"
+output="full_orgs_list_w_taxids.tsv"
 
-# Create or clear the output file
-> species_with_taxids.tsv
+# Clear the output file
+> "$output"
 
-# Loop over the array
-for species in "${species_list[@]}"; do
+# Read species names (first column) into array
+mapfile -t species_array < <(cut -f1 "$input")
+
+# Loop through array
+for species in "${species_array[@]}"; do
   echo "Searching: $species" >&2
   taxid=$(esearch -db taxonomy -query "$species" | efetch -format uid)
-  
-  if [ -z "$taxid" ]; then
-    echo -e "$species\tNOT_FOUND" >> species_with_taxids.tsv
+
+  if [[ -z "$taxid" ]]; then
+    echo -e "$species\tNOT_FOUND" >> "$output"
   else
-    echo -e "$species\t$taxid" >> species_with_taxids.tsv
+    echo -e "$species\t$taxid" >> "$output"
   fi
 done
 
-```
-Kraken2 requires the fasta headers to include the **TaxID**, like this
-`sequence_id|kraken:taxid|123456`
 
-mine are set up like this:
-```
->10 dna:chromosome chromosome:Zt_ST99CH_3D7:10:1:1845975:1 REF
-```
+
+
+
 
