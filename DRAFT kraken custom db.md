@@ -8,15 +8,18 @@ kraken2-build --download-taxonomy --db /home/projects/Agribiome/Kraken2_fungi_db
 
 ## 3) Download databases 
 ### Ensembl 
-Go to this page http://ftp.ensemblgenomes.org/pub/fungi/release-61/fasta
+- Go to this page http://ftp.ensemblgenomes.org/pub/fungi/release-61/fasta
 
+- Download the dir
+```
 mkdir -p ensembl_fungi && cd ensembl_fungi
-
 wget -r -nH --cut-dirs=5 -A "*.fa.gz" -np -R "index.html*" \
-ftp://ftp.ensemblgenomes.org/pub/fungi/release-61/fasta/ ```
+ftp://ftp.ensemblgenomes.org/pub/fungi/release-61/fasta/
+```
 
 I pulled the file names from the ensembl dir I downloaded last week and clean up the list:
 
+```
 ls ensembl_fungi/ > species_list.txt
 
 cut -d'_' -f1,2 species_list.txt
@@ -24,6 +27,7 @@ cut -d'_' -f1,2 species_list.txt
 sort -u species_list.txt > species_u.txt
 
 sed -i 's/_/ /g' species_u.txt
+```
 
 ### FungiDB
 
@@ -50,9 +54,8 @@ End Function
     
 7. Back in your spreadsheet, use the formula like this in **Column B**:
     `=GetURL(A2)`
-    🔁 Fill down the column to extract all URLs.
+    Fill down the column to extract all URLs.
     
-
 Save just the urls in a file called: fungi_urls.txt and upload to the Kraken2_fungi_db folder server via filezilla
 
 mkdir -p fungidb_genomes
@@ -116,12 +119,14 @@ echo "  All FASTA headers updated in: $OUT_DIR"
 
 ## 5) Once all headers have been renamed, you are ready to build your custom DB
 
+```
 for file in kraken_ready_fastas/*.fna; do
   kraken2-build --add-to-library "$file" --db /home/projects/Agribiome/Kraken2_fungi_db/kraken_fungi_db
 
 done
-
 kraken2-build --build --db /home/projects/Agribiome/Kraken2_fungi_db/kraken_fungi_db
+```
+### zip all genomes!
 
 ## 6) Inspect your build
 
