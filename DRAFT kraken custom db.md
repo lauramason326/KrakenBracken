@@ -1,10 +1,14 @@
 ## 1) First step, after downloading Kraken is to build the database
 
+```
 kraken2-build --download-taxonomy --db custom_db
+```
 
 ## 2) The next step is to get a list of taxonomy IDs from NCBI, even if the database you are making isn't from NCBI
 
+```
 kraken2-build --download-taxonomy --db /home/projects/Agribiome/Kraken2_fungi_db/kraken_fungi_db
+```
 
 ## 3) Download databases 
 ### Ensembl 
@@ -65,7 +69,6 @@ wget -i ../fungi_urls.txt
 ## 4) Reformat headers
 #### no headers (even those from NCBI) are formatted improperly and need to be reformated
 
-### Read species into an array first
 ```
 mapfile -t species_list < species_keys.txt
 
@@ -126,9 +129,12 @@ for file in kraken_ready_fastas/*.fna; do
 done
 kraken2-build --build --db /home/projects/Agribiome/Kraken2_fungi_db/kraken_fungi_db
 ```
-### zip all genomes!
+### zip all genomes! They take up sooooo much space
 
 ## 6) Inspect your build
+```
+kraken2-inspect --db /path/to/kraken2_db
+```
 
 ## 7) Download library
 ### you do this step NOW and not with the rest of the download because it makes a hash table that cannot be overwritten by your custom hash table. However, you cannot build Bracken without this file
@@ -142,6 +148,8 @@ bracken-build -k 35 -l 151 -d /home/projects/Agribiome/Kraken2_fungi_db/kraken_f
 ```
 
 ## 9) Clean up your database
-
+```
+kraken2-clean --db /path/to/kraken2_db
+```
 
 
