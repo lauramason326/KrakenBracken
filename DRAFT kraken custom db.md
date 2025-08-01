@@ -21,11 +21,8 @@ I pulled the file names from the ensembl dir I downloaded last week and clean up
 
 ```
 ls ensembl_fungi/ > species_list.txt
-
 cut -d'_' -f1,2 species_list.txt
-
 sort -u species_list.txt > species_u.txt
-
 sed -i 's/_/ /g' species_u.txt
 ```
 
@@ -67,7 +64,7 @@ wget -i ../fungi_urls.txt
 ## 4) Reformat headers
 #### no headers (even those from NCBI) are formatted improperly and need to be reformated
 
-Read species into an array first
+### Read species into an array first
 mapfile -t species_list < species_keys.txt
 
 Create or clear the output file
@@ -85,7 +82,8 @@ for species in "${species_list[@]}"; do
   fi
 done
 
-Rename headers
+### Rename headers
+
 TAXID_TABLE="genome_taxid_table.tsv"
 GENOME_DIR="."
 OUT_DIR="kraken_ready_fastas"
