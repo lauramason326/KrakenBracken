@@ -14,3 +14,6 @@ The basic  steps are
 11) Download KrakenTools package
 12) Run kreport_2_krona.py
 13) Concatenate krona tables and remove redundant headers
+
+
+DON'T USE 
