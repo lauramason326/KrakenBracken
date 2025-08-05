@@ -16,4 +16,4 @@ The basic  steps are
 13) Concatenate krona tables and remove redundant headers
 
 
-DON'T USE 
+DON'T USE Build_custom_db FOR CUSTOM BUILD INSTRUCTIONS. I JUST DON'T KNOW HOW TO DELETE IT.
